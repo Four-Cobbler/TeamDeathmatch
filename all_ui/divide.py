@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'divide.ui'
+#
+# Created by: PyQt5 UI code generator 5.12.3
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_mainWindow(object):
+    def setupUi(self, mainWindow):
+        mainWindow.setObjectName("mainWindow")
+        mainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(mainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setGeometry(QtCore.QRect(320, 500, 75, 23))
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_3.setGeometry(QtCore.QRect(150, 510, 75, 23))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.widget = QtWidgets.QWidget(self.centralwidget)
+        self.widget.setGeometry(QtCore.QRect(41, 40, 631, 441))
+        self.widget.setObjectName("widget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.widget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label_image = QtWidgets.QLabel(self.widget)
+        self.label_image.setStyleSheet("font: 36pt \"Adobe Devanagari\";\n"
+"font: 22pt \"Adobe Devanagari\";")
+        self.label_image.setObjectName("label_image")
+        self.horizontalLayout.addWidget(self.label_image)
+        spacerItem = QtWidgets.QSpacerItem(20, 208, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.horizontalLayout.addItem(spacerItem)
+        self.label_result = QtWidgets.QLabel(self.widget)
+        self.label_result.setStyleSheet("font: 28pt \"Adobe Devanagari\";")
+        self.label_result.setObjectName("label_result")
+        self.horizontalLayout.addWidget(self.label_result)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.pushButton = QtWidgets.QPushButton(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
+        self.pushButton.setSizePolicy(sizePolicy)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.pushButton_2 = QtWidgets.QPushButton(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_2.sizePolicy().hasHeightForWidth())
+        self.pushButton_2.setSizePolicy(sizePolicy)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_3.addWidget(self.pushButton_2)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        mainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(mainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setObjectName("menubar")
+        self.menufile = QtWidgets.QMenu(self.menubar)
+        self.menufile.setObjectName("menufile")
+        mainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(mainWindow)
+        self.statusbar.setObjectName("statusbar")
+        mainWindow.setStatusBar(self.statusbar)
+        self.actionopen = QtWidgets.QAction(mainWindow)
+        self.actionopen.setObjectName("actionopen")
+        self.openFileAction = QtWidgets.QAction(mainWindow)
+        self.openFileAction.setObjectName("openFileAction")
+        self.actionopen_2 = QtWidgets.QAction(mainWindow)
+        self.actionopen_2.setObjectName("actionopen_2")
+        self.menufile.addAction(self.actionopen_2)
+        self.menubar.addAction(self.menufile.menuAction())
+
+        self.retranslateUi(mainWindow)
+        QtCore.QMetaObject.connectSlotsByName(mainWindow)
+
+    def retranslateUi(self, mainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        mainWindow.setWindowTitle(_translate("mainWindow", "Division"))
+        self.pushButton_4.setText(_translate("mainWindow", "PushButton"))
+        self.pushButton_3.setText(_translate("mainWindow", "模拟操作"))
+        self.label_image.setText(_translate("mainWindow", "图片导入区"))
+        self.label_result.setText(_translate("mainWindow", "结果区"))
+        self.pushButton.setText(_translate("mainWindow", "返回"))
+        self.pushButton_2.setText(_translate("mainWindow", "关闭"))
+        self.menufile.setTitle(_translate("mainWindow", "file"))
+        self.actionopen.setText(_translate("mainWindow", "open"))
+        self.openFileAction.setText(_translate("mainWindow", "open"))
+        self.actionopen_2.setText(_translate("mainWindow", "open"))
