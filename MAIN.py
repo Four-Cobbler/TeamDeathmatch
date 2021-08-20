@@ -19,10 +19,12 @@ import time
 class WorkThread(QThread):
     START = pyqtSignal()
     END = pyqtSignal()
-
     def run(self):
         self.START.emit()
+        start_time = time.time()
         time.sleep(5)
+        end_time = time.time()
+        self.work_time = end_time - start_time
         self.END.emit()
 
 
@@ -61,7 +63,10 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.setIcon()
+        self.pushButton.clicked.connect(self.reSet)
         self.pushButton_3.setDisabled(True)
+        self.actionsave.setDisabled(True)
+        self.actionsave.triggered.connect(self.save_result)
         self.actionopen_2.triggered.connect(self.getImage)
         self.workThread = WorkThread()
         self.workThread.START.connect(self.start)
@@ -70,11 +75,12 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
         self.pushButton_3.setToolTip("点击按钮开始分割(模拟测试)")
         self.pushButton_2.clicked.connect(self.close)
         self.pushButton_2.setToolTip("点击按钮关闭程序")
+        self.pushButton_5.clicked.connect(self.reSet)
 
     def getImage(self):
         "这是获取图片的函数"
         self.pushButton_3.setDisabled(False)  # 只有获取图片后才能开始分割
-        self.image_path, self.img_type = QFileDialog.getOpenFileName()
+        self.image_path, self.img_type = QFileDialog.getOpenFileName(None, "打开文件", ".", "")
         self.jpg = QPixmap(self.image_path).scaled(self.label_image.width(), self.label_image.height())
         self.label_image.setPixmap(self.jpg)
 
@@ -87,9 +93,10 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
 
     def end(self):
         "这是提示图片分割结束的函数"
+        self.actionsave.setDisabled(False)
         self.result = self.label_image.pixmap()
         self.label_result.setPixmap(self.result)
-        self.label_2.setText("图片分割已经完成，请您验收")
+        self.label_2.setText(f"图片分割已经完成,分割时间为{self.workThread.work_time}")
 
     def setIcon(self):
         "这是为界面设置图标的函数"
@@ -97,7 +104,20 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
         icon.addPixmap(QPixmap(r".\all_ui\ICON.jpeg"))
         self.setWindowIcon(icon)
 
+    def reSet(self):
+        "这是用来将图片重置的函数"
+        self.label_image.setText("图片导入区")
+        self.label_result.setText("结果展示区")
+        self.label_2.setText("请重新选择图片")
+        self.pushButton_3.setDisabled(True)
+        self.actionsave.setDisabled(True)
 
+    def save_result(self):
+        "这是用来保存结果的函数"
+        filename = QFileDialog.getSaveFileName(None, "保存文件", ".", "Image Files(*.jpg *.png)")
+        self.save_picture = self.label_result.pixmap()
+        self.save_picture.save(filename[0])
+        self.label_2.setText("图片已保存成功,清查收")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

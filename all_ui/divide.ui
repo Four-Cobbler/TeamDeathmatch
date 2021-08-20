@@ -93,6 +93,19 @@ font: 22pt &quot;Adobe Devanagari&quot;;</string>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
+        <widget class="QPushButton" name="pushButton_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>刷新</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -187,6 +200,7 @@ font: 10pt &quot;Adobe Devanagari&quot;;</string>
      <string>file</string>
     </property>
     <addaction name="actionopen_2"/>
+    <addaction name="actionsave"/>
    </widget>
    <addaction name="menufile"/>
   </widget>
@@ -204,6 +218,11 @@ font: 10pt &quot;Adobe Devanagari&quot;;</string>
   <action name="actionopen_2">
    <property name="text">
     <string>open</string>
+   </property>
+  </action>
+  <action name="actionsave">
+   <property name="text">
+    <string>save</string>
    </property>
   </action>
  </widget>
