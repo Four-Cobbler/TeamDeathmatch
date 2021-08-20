@@ -14,15 +14,21 @@ from all_ui import welcome as welcome_ui
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QThread, pyqtSignal
 import time
+import kmeans
 
 
 class WorkThread(QThread):
     START = pyqtSignal()
     END = pyqtSignal()
+
+    def __init__(self, img_path):
+        super(WorkThread, self).__init__()
+        self.img_path = img_path
+
     def run(self):
         self.START.emit()
         start_time = time.time()
-        time.sleep(5)
+        self.result_picture = kmeans.seg_kmeans_color(self.img_path)
         end_time = time.time()
         self.work_time = end_time - start_time
         self.END.emit()
@@ -68,9 +74,6 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
         self.actionsave.setDisabled(True)
         self.actionsave.triggered.connect(self.save_result)
         self.actionopen_2.triggered.connect(self.getImage)
-        self.workThread = WorkThread()
-        self.workThread.START.connect(self.start)
-        self.workThread.END.connect(self.end)
         self.pushButton_3.clicked.connect(self.work)
         self.pushButton_3.setToolTip("点击按钮开始分割(模拟测试)")
         self.pushButton_2.clicked.connect(self.close)
@@ -79,13 +82,19 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
 
     def getImage(self):
         "这是获取图片的函数"
+
         self.pushButton_3.setDisabled(False)  # 只有获取图片后才能开始分割
         self.image_path, self.img_type = QFileDialog.getOpenFileName(None, "打开文件", ".", "")
         self.jpg = QPixmap(self.image_path).scaled(self.label_image.width(), self.label_image.height())
         self.label_image.setPixmap(self.jpg)
+        self.create_thread(self.image_path)
 
+    def create_thread(self, img_path):
+        self.workThread = WorkThread(self.image_path)
+        self.workThread.START.connect(self.start)
+        self.workThread.END.connect(self.end)
     def work(self):
-        self.workThread.start()
+        self.workThread.start(self.image_path)
 
     def start(self):
         "这是提示图片分割开始的函数"
@@ -94,7 +103,7 @@ class Divide(QMainWindow, divide_ui.Ui_mainWindow):
     def end(self):
         "这是提示图片分割结束的函数"
         self.actionsave.setDisabled(False)
-        self.result = self.label_image.pixmap()
+        self.result = self.workThread.result_picture
         self.label_result.setPixmap(self.result)
         self.label_2.setText(f"图片分割已经完成,分割时间为{self.workThread.work_time}")
 
