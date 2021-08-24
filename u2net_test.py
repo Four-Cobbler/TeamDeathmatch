@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import glob
-
+import sys
 import time
 import cv2 as cv
 
@@ -44,14 +44,15 @@ def save_output(image_name,pred,i_dir,d_dir):                         # 保存�
     im = Image.fromarray(predict_np*255).convert('RGB')         # 将array形式转化为图片形式，且转换为RGB模式（未转换前array数组为BGR格式）,predict_np仍为[320,320]
     img_name = image_name.split(os.sep)[-1]                     # 将文件路径（image_name）按照分隔符“\”全部切开（-1参数的作用），例：C:\Users\kilok\  ->  C: Users kilok
     image = io.imread(image_name)                               # 按路径读入图片，此处选用io.imread，故读取格式为RGB格式
+    
     imo = im.resize((image.shape[1],image.shape[0]),resample=Image.BILINEAR)    # 对图像进行缩放处理，采用双线性采样方式缩放,缩放为原图大小
     
     origin_image = Image.open(i_dir)                            # origin_image 为PIL.JpegImageFile格式
+    origin_image = origin_image.convert("RGB")                  # 舍弃透明度通道
     origin_image = np.array(origin_image)                       # 将origin_image转为数组形式以方便计算
     
     imo_norm = np.array(imo)/255                                # 将imo转为数组形式并将所有元素同除255，赋给imo_norm
     imo_norm_reverse = [1,1,1]-imo_norm
-
     colored_front_img_array = origin_image * imo_norm           # origin_image和imo_norm两者相乘
     colored_front_img = Image.fromarray(np.uint8(colored_front_img_array))  # 将上行变量转化为图片形式（.png）
     colored_back_img_array = origin_image * imo_norm_reverse    # 取背景操作
@@ -66,7 +67,14 @@ def save_output(image_name,pred,i_dir,d_dir):                         # 保存�
         imidx = imidx + "." + bbb[i]                            
 
     imo.save(d_dir+imidx+'.png')                                # 循环保存图片文件as.png
-    colored_front_img.show()
+    colored_front_img = ImageQt.toqpixmap(colored_front_img)
+    colored_back_img = ImageQt.toqpixmap(colored_back_img)
+    class Temp:
+        def __init__(self):
+            self.Front = colored_front_img
+            self.Back = colored_back_img
+    def RETURN():
+        return Temp()                                           # 通过定义的class类返回两张图片（一张前景一张背景）
 
 
 
@@ -76,13 +84,18 @@ def main():
     model_name='u2net'#u2netp
 
 
-
-    image_dir = os.path.join(os.getcwd(), 'test_data', 'test_images')                           # 在当前程序路径加入test_data test_images
-    prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep) # 模型预测结果的存放目录，我这里是C:\Users\......\U-2-Net\test_data\u2net_results
-    model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')      # 学习到的模型参数文件所在目录
+    if len(sys.argv) == 2:
+        image_dir = sys.argv[1]                                                                 # 只接收一个文件夹路径传入
+        #os.path.join(os.getcwd(), 'test_data', 'test_images')                                   # 在当前程序路径加入test_data test_images
+    prediction_dir = os.path.join(os.getcwd(), 'test_data', model_name + '_results' + os.sep)    # 模型预测结果的存放目录，我这里是C:\Users\......\U-2-Net\test_data\u2net_results
+    model_dir = os.path.join(os.getcwd(), 'saved_models', model_name, model_name + '.pth')       # 学习到的模型参数文件所在目录
     
-    img_name_list = glob.glob(image_dir + os.sep + '*')                                         # 测试文件夹下的图片路径列表
-    # print(img_name_list)
+    img_name_list = []
+    for i in range(0,3):
+        print("请输入此目录下要分割的文件名加后缀")
+        img_name_list.append(os.path.join(image_dir , input()))
+                                                                                                 # 测试文件夹下的图片路径列表
+    print(img_name_list)                                                                        # img_name_list是一个列表形式C:\\Users\\......\\U-2-Net\\test_data\\u2net_results\\...
 
     # --------- 2. dataloader ---------
     #1. dataloader
