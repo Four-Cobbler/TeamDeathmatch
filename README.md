@@ -4,7 +4,7 @@
   <h1 align="center">U<sup>2</sup>-Net: U Square Net</h1>
     
 </p>
-
+原来作者的Readme，我没改，但是里面引用的图片我都删了，所以图片加载不出来（笑
 This is the official repo for our paper **U<sup>2</sup>-Net(U square net)** published in Pattern Recognition 2020:
 
 ## [U<sup>2</sup>-Net: Going Deeper with Nested U-Structure for Salient Object Detection](https://arxiv.org/pdf/2005.09007.pdf)
