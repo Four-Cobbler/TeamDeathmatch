@@ -75,7 +75,7 @@ def MAIN(imagelist):
                 self.Back = colored_back_img
         def RETURN():
             return Temp()                                           # 通过定义的class类返回两张图片（一张前景一张背景）
-        colored_front_img.show()
+        
 
 
     def main(img_name_list):
