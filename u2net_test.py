@@ -11,6 +11,7 @@ from torchvision import transforms#, utils
 
 import numpy as np
 from PIL import Image
+from PyQt5 import QtGui
 import matplotlib.pyplot as plt
 import glob
 import sys
@@ -21,6 +22,8 @@ from data_loader import RescaleT
 from data_loader import ToTensor
 from data_loader import ToTensorLab
 from data_loader import SalObjDataset
+
+from PIL import ImageQt
 
 from model import U2NET # full size version 173.6 MB
 from model import U2NETP # small version u2net 4.7 MB
@@ -35,6 +38,17 @@ def MAIN(imagelist):
         dn = (d-mi)/(ma-mi)
 
         return dn
+    
+    def addTransparency(img):
+        img = img.convert('RGBA')
+        img_blender = Image.new('RGBA', img.size, (0,0,0,0))
+        img = Image.blend(img_blender, img, 1)
+        return img
+    def ConvertRGBA2GRAY(img):
+        img = img*255
+        Im = Image.fromarray(np.uint8(img)).convert('L')
+        Im = np.array(Im)
+        return Im
 
     def save_output(image_name,pred,i_dir,d_dir):                         # 保存并输出图片
 
@@ -49,36 +63,49 @@ def MAIN(imagelist):
         imo = im.resize((image.shape[1],image.shape[0]),resample=Image.BILINEAR)    # 对图像进行缩放处理，采用双线性采样方式缩放,缩放为原图大小
     
         origin_image = Image.open(i_dir)                            # origin_image 为PIL.JpegImageFile格式
-        origin_image = origin_image.convert("RGB")                  # 舍弃透明度通道
-        origin_image = np.array(origin_image)                       # 将origin_image转为数组形式以方便计算
-    
+                                                                        # origin_image = origin_image.convert("RGB")                  # 舍弃透明度通道
+                                                                        # origin_image = np.array(origin_image)                       # 将origin_image转为数组形式以方便计算
+        
+        imo = addTransparency(imo)
         imo_norm = np.array(imo)/255                                # 将imo转为数组形式并将所有元素同除255，赋给imo_norm
-        imo_norm_reverse = [1,1,1]-imo_norm
-        colored_front_img_array = origin_image * imo_norm           # origin_image和imo_norm两者相乘
-        colored_front_img = Image.fromarray(np.uint8(colored_front_img_array))  # 将上行变量转化为图片形式（.png）
-        colored_back_img_array = origin_image * imo_norm_reverse    # 取背景操作
-        colored_back_img = Image.fromarray(np.uint8(colored_back_img_array))
+        imo_norm_reverse = [1,1,1,1]-imo_norm
 
-        pb_np = np.array(imo)                                       # 缩放后图片转化为array数组
+        #带注释部分为废弃代码，为防止以后启用没有删除
+                                                                        #colored_front_img_array = origin_image * imo_norm           # origin_image和imo_norm两者相乘,得到黑色背景图
+                                                                        #colored_front_img = Image.fromarray(np.uint8(colored_front_img_array))      # 将上行变量转化为图片形式（.png）
+        imo_norm_gray = Image.fromarray(np.uint8(ConvertRGBA2GRAY(imo_norm)))
+        if len(origin_image.split()) == 4:
+            r,g,b,a = origin_image.split()
+        elif len(origin_image.split()) == 3:
+            r,g,b = origin_image.split()
+        colored_front_img = Image.merge('RGBA',(r,g,b,imo_norm_gray))
 
-        aaa = img_name.split(".")                                   # 按.切分路径
-        bbb = aaa[0:-1]                                             # 按左起第0个元素直到倒数第一个元素-1进行切片
-        imidx = bbb[0]                                              # 第一个切片，如C：
-        for i in range(1,len(bbb)):
-            imidx = imidx + "." + bbb[i]                            
+                                                                        #imo_norm_gray = np.expand_dims(GRAY_imo_norm,2).repeat(1,axis=2)            # 在第三个维度重复1次
+                                                                        #colored_front_img_array = colored_front_img_array * imo_norm_gray
+                                                                                        
+                                                                        #colored_back_img_array = origin_image * imo_norm_reverse                   # 取背景操作
+                                                                        #colored_back_img = Image.fromarray(np.uint8(colored_back_img_array))
 
-        imo.save(d_dir+imidx+'.png')                                # 循环保存图片文件as.png
-    
-        class Temp:
-            def __init__(self):
-                self.Front = colored_front_img
-                self.Back = colored_back_img
-        def RETURN():
-            return Temp()                                           # 通过定义的class类返回两张图片（一张前景一张背景）
+                                                                        #pb_np = np.array(imo)                                       # 缩放后图片转化为array数组
+
+                                                                        #aaa = img_name.split(".")                                   # 按.切分路径
+                                                                        #bbb = aaa[0:-1]                                             # 按左起第0个元素直到倒数第一个元素-1进行切片
+                                                                        #imidx = bbb[0]                                              # 第一个切片，如C：
+                                                                        ##for i in range(1,len(bbb)):
+                                                                        ##    imidx = imidx + "." + bbb[i]                            
+
+                                                                        ##imo.save(d_dir+imidx+'.png')                                # 循环保存图片文件as.png
+        data = colored_front_img.tobytes("raw", "RGBA")
+        qim = QtGui.QImage(data, colored_front_img.size[0], colored_front_img.size[1], QtGui.QImage.Format_RGBA8888)
+        pixmap = QtGui.QPixmap.fromImage(qim)
+        
+        
+        
+        return pixmap
         
 
 
-    def main(img_name_list):
+    def pppp(img_name_list):
 
         # --------- 1. get image path and name ---------
         model_name='u2net'#u2netp
@@ -143,12 +170,15 @@ def MAIN(imagelist):
             # save results to test_results folder
             if not os.path.exists(prediction_dir):
                 os.makedirs(prediction_dir, exist_ok=True)
-            save_output(img_name_list[i_test],pred,img_name_list[i_test],prediction_dir)                                  # 保存mask图到相应目录
+            immmage = save_output(img_name_list[i_test],pred,img_name_list[i_test],prediction_dir)                                  # 保存mask图到相应目录
             del d1,d2,d3,d4,d5,d6,d7
-            input()
+            return immmage
         print (str(len(img_name_list))+"个文件已处理")
-    main(imagelist)
-
+    immmmmmage = pppp(imagelist)
+    
+    return immmmmmage
+    
 
 if __name__ == "__main__":
-    MAIN(['C:\\Users\\kilok\\Desktop\\2021-02-02_15.08.54.png','C:\\Users\\kilok\\Desktop\\absfbsxt.jpg'])
+    MAIN([r"C:\Users\kilok\Desktop\2021-02-02_15.08.54.png"])
+
